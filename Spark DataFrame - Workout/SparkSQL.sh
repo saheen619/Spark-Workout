@@ -1,4 +1,23 @@
 abc@3a9cd9a16407:~/workspace$ pyspark
+"""
+Python 3.9.13 (main, Oct 13 2022, 21:15:33) 
+[GCC 11.2.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+23/05/24 22:46:01 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ '/ __/  _/
+   /__ / .__/\_,_/_/ /_/\_\   version 3.2.1
+      /_/
+
+Using Python version 3.9.13 (main, Oct 13 2022 21:15:33)
+Spark context Web UI available at http://b21941d8ee62:4040
+Spark context available as 'sc' (master = local[*], app id = local-1684948562892).
+SparkSession available as 'spark'.
+"""
 
 >>> df1 = spark.read.option("header",True).option("inferSchema",True).csv("/departments.csv")
 >>> df2 = spark.read.option("header",True).option("inferSchema",True).csv("/employees.csv")
@@ -16,7 +35,7 @@ Row(EMPLOYEE_ID=198, FIRST_NAME='Donald', LAST_NAME='OConnell', EMAIL='DOCONNEL'
 >>> df1.createOrReplaceTempView("departments")
 >>> df2.createOrReplaceTempView("employees")
 >>> 
->>> # Now we call the spark session and then query in sql over the temporary view
+>>> # Now we call the spark session and then use the .sql method to query in sql over the temporary view
 >>> 
 >>> spark.sql("SELECT * FROM employees").show()
 +-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+
@@ -102,5 +121,127 @@ WHEN salary >= 10000 AND salary < 15000 THEN 'GRADE B' ELSE 'GRADE C' END AS emp
 +-----------+----------+---------+-------------+--------------+
 only showing top 20 rows
 
+
+
+
+# USing window functions
+
+>>> spark.sql("SELECT employee_id, department_id, RANK() OVER(PARTITION BY department_id ORDER BY salary DESC) AS salary_rank 
+FROM employees").show(100)
++-----------+-------------+-----------+
+|employee_id|department_id|salary_rank|
++-----------+-------------+-----------+
+|        200|           10|          1|
+|        201|           20|          1|
+|        202|           20|          2|
+|        114|           30|          1|
+|        115|           30|          2|
+|        116|           30|          3|
+|        117|           30|          4|
+|        118|           30|          5|
+|        119|           30|          6|
+|        203|           40|          1|
+|        121|           50|          1|
+|        120|           50|          2|
+|        122|           50|          3|
+|        123|           50|          4|
+|        124|           50|          5|
+|        137|           50|          6|
+|        129|           50|          7|
+|        133|           50|          7|
+|        125|           50|          9|
+|        138|           50|          9|
+|        134|           50|         11|
+|        130|           50|         12|
+|        126|           50|         13|
+|        139|           50|         13|
+|        198|           50|         15|
+|        199|           50|         15|
+|        131|           50|         17|
+|        140|           50|         17|
+|        127|           50|         19|
+|        135|           50|         19|
+|        128|           50|         21|
+|        136|           50|         21|
+|        132|           50|         23|
+|        103|           60|          1|
+|        104|           60|          2|
+|        105|           60|          3|
+|        106|           60|          3|
+|        107|           60|          5|
+|        204|           70|          1|
+|        100|           90|          1|
+|        101|           90|          2|
+|        102|           90|          2|
+|        108|          100|          1|
+|        109|          100|          2|
+|        110|          100|          3|
+|        112|          100|          4|
+|        111|          100|          5|
+|        113|          100|          6|
+|        205|          110|          1|
+|        206|          110|          2|
++-----------+-------------+-----------+
+
+
+
+>>> # Using JOINS
+
+>>> spark.sql("SELECT e.employee_id, e.first_name, e.job_id, e.salary, d.* FROM employees e JOIN departments d 
+ON e.department_id = d.department_id").show(100)
++-----------+-----------+----------+------+-------------+----------------+----------+-----------+
+|employee_id| first_name|    job_id|salary|DEPARTMENT_ID| DEPARTMENT_NAME|MANAGER_ID|LOCATION_ID|
++-----------+-----------+----------+------+-------------+----------------+----------+-----------+
+|        198|     Donald|  SH_CLERK|  2600|           50|        Shipping|       121|       1500|
+|        199|    Douglas|  SH_CLERK|  2600|           50|        Shipping|       121|       1500|
+|        200|   Jennifer|   AD_ASST|  4400|           10|  Administration|       200|       1700|
+|        201|    Michael|    MK_MAN| 13000|           20|       Marketing|       201|       1800|
+|        202|        Pat|    MK_REP|  6000|           20|       Marketing|       201|       1800|
+|        203|      Susan|    HR_REP|  6500|           40| Human Resources|       203|       2400|
+|        204|    Hermann|    PR_REP| 10000|           70|Public Relations|       204|       2700|
+|        205|    Shelley|    AC_MGR| 12008|          110|      Accounting|       205|       1700|
+|        206|    William|AC_ACCOUNT|  8300|          110|      Accounting|       205|       1700|
+|        100|     Steven|   AD_PRES| 24000|           90|       Executive|       100|       1700|
+|        101|      Neena|     AD_VP| 17000|           90|       Executive|       100|       1700|
+|        102|        Lex|     AD_VP| 17000|           90|       Executive|       100|       1700|
+|        103|  Alexander|   IT_PROG|  9000|           60|              IT|       103|       1400|
+|        104|      Bruce|   IT_PROG|  6000|           60|              IT|       103|       1400|
+|        105|      David|   IT_PROG|  4800|           60|              IT|       103|       1400|
+|        106|      Valli|   IT_PROG|  4800|           60|              IT|       103|       1400|
+|        107|      Diana|   IT_PROG|  4200|           60|              IT|       103|       1400|
+|        108|      Nancy|    FI_MGR| 12008|          100|         Finance|       108|       1700|
+|        109|     Daniel|FI_ACCOUNT|  9000|          100|         Finance|       108|       1700|
+|        110|       John|FI_ACCOUNT|  8200|          100|         Finance|       108|       1700|
+|        111|     Ismael|FI_ACCOUNT|  7700|          100|         Finance|       108|       1700|
+|        112|Jose Manuel|FI_ACCOUNT|  7800|          100|         Finance|       108|       1700|
+|        113|       Luis|FI_ACCOUNT|  6900|          100|         Finance|       108|       1700|
+|        114|        Den|    PU_MAN| 11000|           30|      Purchasing|       114|       1700|
+|        115|  Alexander|  PU_CLERK|  3100|           30|      Purchasing|       114|       1700|
+|        116|     Shelli|  PU_CLERK|  2900|           30|      Purchasing|       114|       1700|
+|        117|      Sigal|  PU_CLERK|  2800|           30|      Purchasing|       114|       1700|
+|        118|        Guy|  PU_CLERK|  2600|           30|      Purchasing|       114|       1700|
+|        119|      Karen|  PU_CLERK|  2500|           30|      Purchasing|       114|       1700|
+|        120|    Matthew|    ST_MAN|  8000|           50|        Shipping|       121|       1500|
+|        121|       Adam|    ST_MAN|  8200|           50|        Shipping|       121|       1500|
+|        122|      Payam|    ST_MAN|  7900|           50|        Shipping|       121|       1500|
+|        123|     Shanta|    ST_MAN|  6500|           50|        Shipping|       121|       1500|
+|        124|      Kevin|    ST_MAN|  5800|           50|        Shipping|       121|       1500|
+|        125|      Julia|  ST_CLERK|  3200|           50|        Shipping|       121|       1500|
+|        126|      Irene|  ST_CLERK|  2700|           50|        Shipping|       121|       1500|
+|        127|      James|  ST_CLERK|  2400|           50|        Shipping|       121|       1500|
+|        128|     Steven|  ST_CLERK|  2200|           50|        Shipping|       121|       1500|
+|        129|      Laura|  ST_CLERK|  3300|           50|        Shipping|       121|       1500|
+|        130|      Mozhe|  ST_CLERK|  2800|           50|        Shipping|       121|       1500|
+|        131|      James|  ST_CLERK|  2500|           50|        Shipping|       121|       1500|
+|        132|         TJ|  ST_CLERK|  2100|           50|        Shipping|       121|       1500|
+|        133|      Jason|  ST_CLERK|  3300|           50|        Shipping|       121|       1500|
+|        134|    Michael|  ST_CLERK|  2900|           50|        Shipping|       121|       1500|
+|        135|         Ki|  ST_CLERK|  2400|           50|        Shipping|       121|       1500|
+|        136|      Hazel|  ST_CLERK|  2200|           50|        Shipping|       121|       1500|
+|        137|     Renske|  ST_CLERK|  3600|           50|        Shipping|       121|       1500|
+|        138|    Stephen|  ST_CLERK|  3200|           50|        Shipping|       121|       1500|
+|        139|       John|  ST_CLERK|  2700|           50|        Shipping|       121|       1500|
+|        140|     Joshua|  ST_CLERK|  2500|           50|        Shipping|       121|       1500|
++-----------+-----------+----------+------+-------------+----------------+----------+-----------+
 
 
