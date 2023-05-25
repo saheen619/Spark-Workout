@@ -969,3 +969,171 @@ only showing top 20 rows
 |        110|      John|       C GRADE|
 +-----------+----------+--------------+
 only showing top 20 rows
+
+
+>>> # JOINS IN PYSPARK
+
+>>> df2.join(df1, df2.DEPARTMENT_ID == df1.DEPARTMENT_ID, "INNER").show()
++-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+-------------+----------------+----------+-----------+
+|EMPLOYEE_ID|FIRST_NAME|LAST_NAME|   EMAIL|PHONE_NUMBER|HIRE_DATE|    JOB_ID|SALARY|COMMISSION_PCT|MANAGER_ID|DEPARTMENT_ID|DEPARTMENT_ID| DEPARTMENT_NAME|MANAGER_ID|LOCATION_ID|
++-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+-------------+----------------+----------+-----------+
+|        198|    Donald| OConnell|DOCONNEL|650.507.9833|21-JUN-07|  SH_CLERK|  2600|            - |       124|           50|           50|        Shipping|       121|       1500|
+|        199|   Douglas|    Grant|  DGRANT|650.507.9844|13-JAN-08|  SH_CLERK|  2600|            - |       124|           50|           50|        Shipping|       121|       1500|
+|        200|  Jennifer|   Whalen| JWHALEN|515.123.4444|17-SEP-03|   AD_ASST|  4400|            - |       101|           10|           10|  Administration|       200|       1700|
+|        201|   Michael|Hartstein|MHARTSTE|515.123.5555|17-FEB-04|    MK_MAN| 13000|            - |       100|           20|           20|       Marketing|       201|       1800|
+|        202|       Pat|      Fay|    PFAY|603.123.6666|17-AUG-05|    MK_REP|  6000|            - |       201|           20|           20|       Marketing|       201|       1800|
+|        203|     Susan|   Mavris| SMAVRIS|515.123.7777|07-JUN-02|    HR_REP|  6500|            - |       101|           40|           40| Human Resources|       203|       2400|
+|        204|   Hermann|     Baer|   HBAER|515.123.8888|07-JUN-02|    PR_REP| 10000|            - |       101|           70|           70|Public Relations|       204|       2700|
+|        205|   Shelley|  Higgins|SHIGGINS|515.123.8080|07-JUN-02|    AC_MGR| 12008|            - |       101|          110|          110|      Accounting|       205|       1700|
+|        206|   William|    Gietz|  WGIETZ|515.123.8181|07-JUN-02|AC_ACCOUNT|  8300|            - |       205|          110|          110|      Accounting|       205|       1700|
+|        100|    Steven|     King|   SKING|515.123.4567|17-JUN-03|   AD_PRES| 24000|            - |        - |           90|           90|       Executive|       100|       1700|
+|        101|     Neena|  Kochhar|NKOCHHAR|515.123.4568|21-SEP-05|     AD_VP| 17000|            - |       100|           90|           90|       Executive|       100|       1700|
+|        102|       Lex|  De Haan| LDEHAAN|515.123.4569|13-JAN-01|     AD_VP| 17000|            - |       100|           90|           90|       Executive|       100|       1700|
+|        103| Alexander|   Hunold| AHUNOLD|590.423.4567|03-JAN-06|   IT_PROG|  9000|            - |       102|           60|           60|              IT|       103|       1400|
+|        104|     Bruce|    Ernst|  BERNST|590.423.4568|21-MAY-07|   IT_PROG|  6000|            - |       103|           60|           60|              IT|       103|       1400|
+|        105|     David|   Austin| DAUSTIN|590.423.4569|25-JUN-05|   IT_PROG|  4800|            - |       103|           60|           60|              IT|       103|       1400|
+|        106|     Valli|Pataballa|VPATABAL|590.423.4560|05-FEB-06|   IT_PROG|  4800|            - |       103|           60|           60|              IT|       103|       1400|
+|        107|     Diana|  Lorentz|DLORENTZ|590.423.5567|07-FEB-07|   IT_PROG|  4200|            - |       103|           60|           60|              IT|       103|       1400|
+|        108|     Nancy|Greenberg|NGREENBE|515.124.4569|17-AUG-02|    FI_MGR| 12008|            - |       101|          100|          100|         Finance|       108|       1700|
+|        109|    Daniel|   Faviet| DFAVIET|515.124.4169|16-AUG-02|FI_ACCOUNT|  9000|            - |       108|          100|          100|         Finance|       108|       1700|
+|        110|      John|     Chen|   JCHEN|515.124.4269|28-SEP-05|FI_ACCOUNT|  8200|            - |       108|          100|          100|         Finance|       108|       1700|
++-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+-------------+----------------+----------+-----------+
+only showing top 20 rows
+
+
+>>> df2.join(df1, df2.DEPARTMENT_ID == df1.DEPARTMENT_ID, "INNER").select(df2.EMPLOYEE_ID, 
+df2.FIRST_NAME, df2.DEPARTMENT_ID, df1.DEPARTMENT_NAME).show()
++-----------+----------+-------------+----------------+
+|EMPLOYEE_ID|FIRST_NAME|DEPARTMENT_ID| DEPARTMENT_NAME|
++-----------+----------+-------------+----------------+
+|        198|    Donald|           50|        Shipping|
+|        199|   Douglas|           50|        Shipping|
+|        200|  Jennifer|           10|  Administration|
+|        201|   Michael|           20|       Marketing|
+|        202|       Pat|           20|       Marketing|
+|        203|     Susan|           40| Human Resources|
+|        204|   Hermann|           70|Public Relations|
+|        205|   Shelley|          110|      Accounting|
+|        206|   William|          110|      Accounting|
+|        100|    Steven|           90|       Executive|
+|        101|     Neena|           90|       Executive|
+|        102|       Lex|           90|       Executive|
+|        103| Alexander|           60|              IT|
+|        104|     Bruce|           60|              IT|
+|        105|     David|           60|              IT|
+|        106|     Valli|           60|              IT|
+|        107|     Diana|           60|              IT|
+|        108|     Nancy|          100|         Finance|
+|        109|    Daniel|          100|         Finance|
+|        110|      John|          100|         Finance|
++-----------+----------+-------------+----------------+
+only showing top 20 rows
+
+
+
+>>> # FULL OUTER JOIN
+
+>>> df2.join(df1, df2.DEPARTMENT_ID == df1.DEPARTMENT_ID, "fullouter").select(df2.EMPLOYEE_ID, df2.FIRST_NAME, df2.DEPARTMENT_ID, df1.DEPARTMENT_NAME).show()
++-----------+----------+-------------+---------------+
+|EMPLOYEE_ID|FIRST_NAME|DEPARTMENT_ID|DEPARTMENT_NAME|
++-----------+----------+-------------+---------------+
+|        200|  Jennifer|           10| Administration|
+|        201|   Michael|           20|      Marketing|
+|        202|       Pat|           20|      Marketing|
+|        114|       Den|           30|     Purchasing|
+|        115| Alexander|           30|     Purchasing|
+|        116|    Shelli|           30|     Purchasing|
+|        117|     Sigal|           30|     Purchasing|
+|        118|       Guy|           30|     Purchasing|
+|        119|     Karen|           30|     Purchasing|
+|        203|     Susan|           40|Human Resources|
+|        198|    Donald|           50|       Shipping|
+|        199|   Douglas|           50|       Shipping|
+|        120|   Matthew|           50|       Shipping|
+|        121|      Adam|           50|       Shipping|
+|        122|     Payam|           50|       Shipping|
+|        123|    Shanta|           50|       Shipping|
+|        124|     Kevin|           50|       Shipping|
+|        125|     Julia|           50|       Shipping|
+|        126|     Irene|           50|       Shipping|
+|        127|     James|           50|       Shipping|
++-----------+----------+-------------+---------------+
+only showing top 20 rows
+
+
+>>> # Find the name of employees who are managers themselves
+>>> # We do self inner join on the df2 dataframe to find the employees who are managers themselves.
+
+>>> df2.alias("emp1").join(df2.alias("emp2"), col("emp1.MANAGER_ID") == col("emp2.EMPLOYEE_ID"),"INNER").select(col("emp1.MANAGER_ID"), col("emp2.FIRST_NAME"), col("emp2.LAST_NAME")).show(100)
++----------+----------+---------+
+|MANAGER_ID|FIRST_NAME|LAST_NAME|
++----------+----------+---------+
+|       201|   Michael|Hartstein|
+|       205|   Shelley|  Higgins|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       100|    Steven|     King|
+|       101|     Neena|  Kochhar|
+|       101|     Neena|  Kochhar|
+|       101|     Neena|  Kochhar|
+|       101|     Neena|  Kochhar|
+|       101|     Neena|  Kochhar|
+|       102|       Lex|  De Haan|
+|       103| Alexander|   Hunold|
+|       103| Alexander|   Hunold|
+|       103| Alexander|   Hunold|
+|       103| Alexander|   Hunold|
+|       108|     Nancy|Greenberg|
+|       108|     Nancy|Greenberg|
+|       108|     Nancy|Greenberg|
+|       108|     Nancy|Greenberg|
+|       108|     Nancy|Greenberg|
+|       114|       Den| Raphaely|
+|       114|       Den| Raphaely|
+|       114|       Den| Raphaely|
+|       114|       Den| Raphaely|
+|       114|       Den| Raphaely|
+|       120|   Matthew|    Weiss|
+|       120|   Matthew|    Weiss|
+|       120|   Matthew|    Weiss|
+|       120|   Matthew|    Weiss|
+|       121|      Adam|    Fripp|
+|       121|      Adam|    Fripp|
+|       121|      Adam|    Fripp|
+|       121|      Adam|    Fripp|
+|       122|     Payam| Kaufling|
+|       122|     Payam| Kaufling|
+|       122|     Payam| Kaufling|
+|       122|     Payam| Kaufling|
+|       123|    Shanta|  Vollman|
+|       123|    Shanta|  Vollman|
+|       123|    Shanta|  Vollman|
+|       123|    Shanta|  Vollman|
+|       124|     Kevin|  Mourgos|
+|       124|     Kevin|  Mourgos|
++----------+----------+---------+
+
+>>> df2.alias("emp1").join(df2.alias("emp2"), col("emp1.MANAGER_ID") == col("emp2.EMPLOYEE_ID"),"INNER").select(col("emp1.MANAGER_ID"), col("emp2.FIRST_NAME"), col("emp2.LAST_NAME")).dropDuplicates().orderBy("emp1.MANAGER_ID").show(100)
++----------+----------+---------+
+|MANAGER_ID|FIRST_NAME|LAST_NAME|
++----------+----------+---------+
+|       100|    Steven|     King|
+|       101|     Neena|  Kochhar|
+|       102|       Lex|  De Haan|
+|       103| Alexander|   Hunold|
+|       108|     Nancy|Greenberg|
+|       114|       Den| Raphaely|
+|       120|   Matthew|    Weiss|
+|       121|      Adam|    Fripp|
+|       122|     Payam| Kaufling|
+|       123|    Shanta|  Vollman|
+|       124|     Kevin|  Mourgos|
+|       201|   Michael|Hartstein|
+|       205|   Shelley|  Higgins|
++----------+----------+---------+
