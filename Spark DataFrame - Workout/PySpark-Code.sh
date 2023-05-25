@@ -892,3 +892,80 @@ min("SALARY").alias("MIN_SALARY"), avg("SALARY").alias("AVERAGE_SALARY")).orderB
 +-------------+----------+-------------+--------------+----------+--------------+
 
 
+>>> # also using a filter condition on the query
+>>> # filter() and where() is same in pyspark 
+
+>>> df2.groupBy("DEPARTMENT_ID","JOB_ID").agg(sum("SALARY").alias("SUM_OF_SALARY"), max("SALARY").alias("MAXIMUM_SALARY"), 
+min("SALARY").alias("MIN_SALARY"), avg("SALARY").alias("AVERAGE_SALARY")).orderBy("DEPARTMENT_ID")
+.filter(col("MAXIMUM_SALARY") >= 10000).show()
++-------------+-------+-------------+--------------+----------+--------------+
+|DEPARTMENT_ID| JOB_ID|SUM_OF_SALARY|MAXIMUM_SALARY|MIN_SALARY|AVERAGE_SALARY|
++-------------+-------+-------------+--------------+----------+--------------+
+|           20| MK_MAN|        13000|         13000|     13000|       13000.0|
+|           30| PU_MAN|        11000|         11000|     11000|       11000.0|
+|           70| PR_REP|        10000|         10000|     10000|       10000.0|
+|           90|  AD_VP|        34000|         17000|     17000|       17000.0|
+|           90|AD_PRES|        24000|         24000|     24000|       24000.0|
+|          100| FI_MGR|        12008|         12008|     12008|       12008.0|
+|          110| AC_MGR|        12008|         12008|     12008|       12008.0|
++-------------+-------+-------------+--------------+----------+--------------+
+
+
+>>> # Using a case when statement in pyspark
+>>> 
+>>> # Deriving a new DataFrame out of df2 along with the case when column included
+
+>>> df3 = df2.withColumn("EMPLOYEE_GRADE", when( col("SALARY") >= 15000, "A GRADE").when( (col("SALARY") >= 10000) & (col("SALARY") < 15000), "B GRADE").otherwise("C GRADE"))
+>>> df3.show()
++-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+--------------+
+|EMPLOYEE_ID|FIRST_NAME|LAST_NAME|   EMAIL|PHONE_NUMBER|HIRE_DATE|    JOB_ID|SALARY|COMMISSION_PCT|MANAGER_ID|DEPARTMENT_ID|EMPLOYEE_GRADE|
++-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+--------------+
+|        198|    Donald| OConnell|DOCONNEL|650.507.9833|21-JUN-07|  SH_CLERK|  2600|            - |       124|           50|       C GRADE|
+|        199|   Douglas|    Grant|  DGRANT|650.507.9844|13-JAN-08|  SH_CLERK|  2600|            - |       124|           50|       C GRADE|
+|        200|  Jennifer|   Whalen| JWHALEN|515.123.4444|17-SEP-03|   AD_ASST|  4400|            - |       101|           10|       C GRADE|
+|        201|   Michael|Hartstein|MHARTSTE|515.123.5555|17-FEB-04|    MK_MAN| 13000|            - |       100|           20|       B GRADE|
+|        202|       Pat|      Fay|    PFAY|603.123.6666|17-AUG-05|    MK_REP|  6000|            - |       201|           20|       C GRADE|
+|        203|     Susan|   Mavris| SMAVRIS|515.123.7777|07-JUN-02|    HR_REP|  6500|            - |       101|           40|       C GRADE|
+|        204|   Hermann|     Baer|   HBAER|515.123.8888|07-JUN-02|    PR_REP| 10000|            - |       101|           70|       B GRADE|
+|        205|   Shelley|  Higgins|SHIGGINS|515.123.8080|07-JUN-02|    AC_MGR| 12008|            - |       101|          110|       B GRADE|
+|        206|   William|    Gietz|  WGIETZ|515.123.8181|07-JUN-02|AC_ACCOUNT|  8300|            - |       205|          110|       C GRADE|
+|        100|    Steven|     King|   SKING|515.123.4567|17-JUN-03|   AD_PRES| 24000|            - |        - |           90|       A GRADE|
+|        101|     Neena|  Kochhar|NKOCHHAR|515.123.4568|21-SEP-05|     AD_VP| 17000|            - |       100|           90|       A GRADE|
+|        102|       Lex|  De Haan| LDEHAAN|515.123.4569|13-JAN-01|     AD_VP| 17000|            - |       100|           90|       A GRADE|
+|        103| Alexander|   Hunold| AHUNOLD|590.423.4567|03-JAN-06|   IT_PROG|  9000|            - |       102|           60|       C GRADE|
+|        104|     Bruce|    Ernst|  BERNST|590.423.4568|21-MAY-07|   IT_PROG|  6000|            - |       103|           60|       C GRADE|
+|        105|     David|   Austin| DAUSTIN|590.423.4569|25-JUN-05|   IT_PROG|  4800|            - |       103|           60|       C GRADE|
+|        106|     Valli|Pataballa|VPATABAL|590.423.4560|05-FEB-06|   IT_PROG|  4800|            - |       103|           60|       C GRADE|
+|        107|     Diana|  Lorentz|DLORENTZ|590.423.5567|07-FEB-07|   IT_PROG|  4200|            - |       103|           60|       C GRADE|
+|        108|     Nancy|Greenberg|NGREENBE|515.124.4569|17-AUG-02|    FI_MGR| 12008|            - |       101|          100|       B GRADE|
+|        109|    Daniel|   Faviet| DFAVIET|515.124.4169|16-AUG-02|FI_ACCOUNT|  9000|            - |       108|          100|       C GRADE|
+|        110|      John|     Chen|   JCHEN|515.124.4269|28-SEP-05|FI_ACCOUNT|  8200|            - |       108|          100|       C GRADE|
++-----------+----------+---------+--------+------------+---------+----------+------+--------------+----------+-------------+--------------+
+only showing top 20 rows
+
+>>> df3.select("EMPLOYEE_ID","FIRST_NAME","EMPLOYEE_GRADE").show()
++-----------+----------+--------------+
+|EMPLOYEE_ID|FIRST_NAME|EMPLOYEE_GRADE|
++-----------+----------+--------------+
+|        198|    Donald|       C GRADE|
+|        199|   Douglas|       C GRADE|
+|        200|  Jennifer|       C GRADE|
+|        201|   Michael|       B GRADE|
+|        202|       Pat|       C GRADE|
+|        203|     Susan|       C GRADE|
+|        204|   Hermann|       B GRADE|
+|        205|   Shelley|       B GRADE|
+|        206|   William|       C GRADE|
+|        100|    Steven|       A GRADE|
+|        101|     Neena|       A GRADE|
+|        102|       Lex|       A GRADE|
+|        103| Alexander|       C GRADE|
+|        104|     Bruce|       C GRADE|
+|        105|     David|       C GRADE|
+|        106|     Valli|       C GRADE|
+|        107|     Diana|       C GRADE|
+|        108|     Nancy|       B GRADE|
+|        109|    Daniel|       C GRADE|
+|        110|      John|       C GRADE|
++-----------+----------+--------------+
+only showing top 20 rows
