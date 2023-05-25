@@ -56,6 +56,7 @@ only showing top 20 rows
 
 # inferSchema commands spark to logically assign datatypes for the attributes
 # to add more parameters, use .option(<parameter>)
+
 >>> df1 = spark.read.option("header",True).option("inferSchema",True).csv("/input_data/departments.csv")
 >>> df1.printSchema()
 root
@@ -656,3 +657,107 @@ only showing top 20 rows
 |        199|   Douglas|     Grant|  DGRANT|650.507.9844|13-JAN-08|SH_CLERK|  2600|            - |       124|           50|
 +-----------+----------+----------+--------+------------+---------+--------+------+--------------+----------+-------------+
 only showing top 20 rows
+
+
+
+
+>>> # To use aggregation function, we should import the below library
+>>> 
+>>> from pyspark.sql.functions import *
+>>> 
+>>> df2.count()
+50
+
+>>> # alias function
+>>> df2.select(count("salary").alias("record count")).show()
++------------+
+|record count|
++------------+
+|          50|
++------------+
+
+
+>>> # Find the maximum salary in df2
+>>> df2.select(max("SALARY").alias("Maximum Salary")).show()
++--------------+
+|Maximum Salary|
++--------------+
+|         24000|
++--------------+
+
+>>> # find the minimum salary in df2
+>>> df2.select(min("SALARY").alias("Miniumum Salary")).show()
++---------------+
+|Miniumum Salary|
++---------------+
+|           2100|
++---------------+
+
+>>> # average salary in df2
+>>> df2.select(avg("SALARY").alias("Average Salary")).show()
++--------------+
+|Average Salary|
++--------------+
+|       6182.32|
++--------------+
+
+>>> # orderBy() clause in Spark
+>>> 
+>>> df2.select("EMPLOYEE_ID","FIRST_NAME","DEPARTMENT_ID","SALARY").orderBy("SALARY").show()
++-----------+----------+-------------+------+
+|EMPLOYEE_ID|FIRST_NAME|DEPARTMENT_ID|SALARY|
++-----------+----------+-------------+------+
+|        132|        TJ|           50|  2100|
+|        136|     Hazel|           50|  2200|
+|        128|    Steven|           50|  2200|
+|        127|     James|           50|  2400|
+|        135|        Ki|           50|  2400|
+|        131|     James|           50|  2500|
+|        119|     Karen|           30|  2500|
+|        140|    Joshua|           50|  2500|
+|        198|    Donald|           50|  2600|
+|        199|   Douglas|           50|  2600|
+|        118|       Guy|           30|  2600|
+|        126|     Irene|           50|  2700|
+|        139|      John|           50|  2700|
+|        130|     Mozhe|           50|  2800|
+|        117|     Sigal|           30|  2800|
+|        116|    Shelli|           30|  2900|
+|        134|   Michael|           50|  2900|
+|        115| Alexander|           30|  3100|
+|        125|     Julia|           50|  3200|
+|        138|   Stephen|           50|  3200|
++-----------+----------+-------------+------+
+only showing top 20 rows
+
+
+
+>>> # OrderBy() in descending order and that too on multiple rows
+>>> df2.select("EMPLOYEE_ID","FIRST_NAME","DEPARTMENT_ID","SALARY").orderBy( col("DEPARTMENT_ID").asc(), col("SALARY").desc() ).show()
++-----------+----------+-------------+------+
+|EMPLOYEE_ID|FIRST_NAME|DEPARTMENT_ID|SALARY|
++-----------+----------+-------------+------+
+|        200|  Jennifer|           10|  4400|
+|        201|   Michael|           20| 13000|
+|        202|       Pat|           20|  6000|
+|        114|       Den|           30| 11000|
+|        115| Alexander|           30|  3100|
+|        116|    Shelli|           30|  2900|
+|        117|     Sigal|           30|  2800|
+|        118|       Guy|           30|  2600|
+|        119|     Karen|           30|  2500|
+|        203|     Susan|           40|  6500|
+|        121|      Adam|           50|  8200|
+|        120|   Matthew|           50|  8000|
+|        122|     Payam|           50|  7900|
+|        123|    Shanta|           50|  6500|
+|        124|     Kevin|           50|  5800|
+|        137|    Renske|           50|  3600|
+|        133|     Jason|           50|  3300|
+|        129|     Laura|           50|  3300|
+|        125|     Julia|           50|  3200|
+|        138|   Stephen|           50|  3200|
++-----------+----------+-------------+------+
+only showing top 20 rows
+
+
