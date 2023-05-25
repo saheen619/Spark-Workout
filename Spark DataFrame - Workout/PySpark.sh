@@ -1137,3 +1137,59 @@ only showing top 20 rows
 |       201|   Michael|Hartstein|
 |       205|   Shelley|  Higgins|
 +----------+----------+---------+
+
+
+
+
+# Join df2 with df1 and filter by condition that the location_id = 1700
+
+>>> 
+>>> df2.join(df1, (df2.DEPARTMENT_ID == df1.DEPARTMENT_ID) & (df1.LOCATION_ID == 1700), "inner").select(df2.EMPLOYEE_ID, df2.FIRST_NAME, df2.DEPARTMENT_ID, df1.DEPARTMENT_NAME, df1.LOCATION_ID).show(100)
++-----------+-----------+-------------+---------------+-----------+
+|EMPLOYEE_ID| FIRST_NAME|DEPARTMENT_ID|DEPARTMENT_NAME|LOCATION_ID|
++-----------+-----------+-------------+---------------+-----------+
+|        200|   Jennifer|           10| Administration|       1700|
+|        205|    Shelley|          110|     Accounting|       1700|
+|        206|    William|          110|     Accounting|       1700|
+|        100|     Steven|           90|      Executive|       1700|
+|        101|      Neena|           90|      Executive|       1700|
+|        102|        Lex|           90|      Executive|       1700|
+|        108|      Nancy|          100|        Finance|       1700|
+|        109|     Daniel|          100|        Finance|       1700|
+|        110|       John|          100|        Finance|       1700|
+|        111|     Ismael|          100|        Finance|       1700|
+|        112|Jose Manuel|          100|        Finance|       1700|
+|        113|       Luis|          100|        Finance|       1700|
+|        114|        Den|           30|     Purchasing|       1700|
+|        115|  Alexander|           30|     Purchasing|       1700|
+|        116|     Shelli|           30|     Purchasing|       1700|
+|        117|      Sigal|           30|     Purchasing|       1700|
+|        118|        Guy|           30|     Purchasing|       1700|
+|        119|      Karen|           30|     Purchasing|       1700|
++-----------+-----------+-------------+---------------+-----------+
+
+
+
+
+>>> # MULTIPLE JOINS IN PYSPARK
+>>> 
+>>> # Creating a new DataFrame to do a multiple join
+>>> 
+>>> from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+>>> location_data = [(1700, "INDIA"), (1800, "USA")]
+>>> schema = StructType([StructField ("LOCATION_ID", IntegerType(),True), StructField("LOCATION_NAME", StringType(),True)])
+>>> locDF = spark.createDataFrame(data=location_data, schema = schema)
+>>> locDF.printSchema()
+root
+ |-- LOCATION_ID: integer (nullable = true)
+ |-- LOCATION_NAME: string (nullable = true)
+
+>>> locDF.show()
++-----------+-------------+                                                     
+|LOCATION_ID|LOCATION_NAME|
++-----------+-------------+
+|       1700|        INDIA|
+|       1800|          USA|
++-----------+-------------+
+
+>>> 
