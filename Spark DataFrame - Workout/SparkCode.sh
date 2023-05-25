@@ -761,3 +761,134 @@ only showing top 20 rows
 only showing top 20 rows
 
 
+>>> # groupBy() in spark
+>>> 
+>>> df2.groupBy("DEPARTMENT_ID").sum("SALARY").show(100)
++-------------+-----------+
+|DEPARTMENT_ID|sum(SALARY)|
++-------------+-----------+
+|           20|      19000|
+|           40|       6500|
+|          100|      51608|
+|           10|       4400|
+|           50|      85600|
+|           70|      10000|
+|           90|      58000|
+|           60|      28800|
+|          110|      20308|
+|           30|      24900|
++-------------+-----------+
+
+
+# groupBy(), aggregation() and orderBy() in one query
+>>> df2.groupBy("DEPARTMENT_ID").sum("SALARY").orderBy("DEPARTMENT_ID").show(100)
++-------------+-----------+
+|DEPARTMENT_ID|sum(SALARY)|
++-------------+-----------+
+|           10|       4400|
+|           20|      19000|
+|           30|      24900|
+|           40|       6500|
+|           50|      85600|
+|           60|      28800|
+|           70|      10000|
+|           90|      58000|
+|          100|      51608|
+|          110|      20308|
++-------------+-----------+
+
+
+
+# Another way of sorting using the sorted() function
+# using .collect() 
+# .collect() returns the output as a collection of rows
+>>> sorted(df2.groupBy("DEPARTMENT_ID").sum("SALARY").collect())
+[Row(DEPARTMENT_ID=10, sum(SALARY)=4400),
+ Row(DEPARTMENT_ID=20, sum(SALARY)=19000), 
+ Row(DEPARTMENT_ID=30, sum(SALARY)=24900), 
+ Row(DEPARTMENT_ID=40, sum(SALARY)=6500), 
+ Row(DEPARTMENT_ID=50, sum(SALARY)=85600), 
+ Row(DEPARTMENT_ID=60, sum(SALARY)=28800), 
+ Row(DEPARTMENT_ID=70, sum(SALARY)=10000), 
+ Row(DEPARTMENT_ID=90, sum(SALARY)=58000), 
+ Row(DEPARTMENT_ID=100, sum(SALARY)=51608), 
+ Row(DEPARTMENT_ID=110, sum(SALARY)=20308)]
+
+
+
+>>> # Using groupBy() on multiple columns
+>>> 
+>>> df2.groupBy("DEPARTMENT_ID","JOB_ID").sum("SALARY").show()
++-------------+----------+-----------+
+|DEPARTMENT_ID|    JOB_ID|sum(SALARY)|
++-------------+----------+-----------+
+|           90|   AD_PRES|      24000|
+|           30|    PU_MAN|      11000|
+|           70|    PR_REP|      10000|
+|           50|    ST_MAN|      36400|
+|           40|    HR_REP|       6500|
+|           60|   IT_PROG|      28800|
+|           10|   AD_ASST|       4400|
+|           30|  PU_CLERK|      13900|
+|           50|  ST_CLERK|      44000|
+|           20|    MK_REP|       6000|
+|           50|  SH_CLERK|       5200|
+|           90|     AD_VP|      34000|
+|          100|FI_ACCOUNT|      39600|
+|          110|    AC_MGR|      12008|
+|          110|AC_ACCOUNT|       8300|
+|           20|    MK_MAN|      13000|
+|          100|    FI_MGR|      12008|
++-------------+----------+-----------+
+
+# also applying orderBy() on DEPARTMENT_ID column
+>>> df2.groupBy("DEPARTMENT_ID","JOB_ID").sum("SALARY").orderBy("DEPARTMENT_ID").show()
++-------------+----------+-----------+
+|DEPARTMENT_ID|    JOB_ID|sum(SALARY)|
++-------------+----------+-----------+
+|           10|   AD_ASST|       4400|
+|           20|    MK_REP|       6000|
+|           20|    MK_MAN|      13000|
+|           30|  PU_CLERK|      13900|
+|           30|    PU_MAN|      11000|
+|           40|    HR_REP|       6500|
+|           50|    ST_MAN|      36400|
+|           50|  ST_CLERK|      44000|
+|           50|  SH_CLERK|       5200|
+|           60|   IT_PROG|      28800|
+|           70|    PR_REP|      10000|
+|           90|   AD_PRES|      24000|
+|           90|     AD_VP|      34000|
+|          100|    FI_MGR|      12008|
+|          100|FI_ACCOUNT|      39600|
+|          110|    AC_MGR|      12008|
+|          110|AC_ACCOUNT|       8300|
++-------------+----------+-----------+
+
+>>> 
+>>> # to use different aggregations after groupBy() 
+>>> df2.groupBy("DEPARTMENT_ID","JOB_ID").agg(sum("SALARY").alias("SUM_OF_SALARY"), max("SALARY").alias("MAXIMUM_SALARY"), 
+min("SALARY").alias("MIN_SALARY"), avg("SALARY").alias("AVERAGE_SALARY")).orderBy("DEPARTMENT_ID").show()
++-------------+----------+-------------+--------------+----------+--------------+
+|DEPARTMENT_ID|    JOB_ID|SUM_OF_SALARY|MAXIMUM_SALARY|MIN_SALARY|AVERAGE_SALARY|
++-------------+----------+-------------+--------------+----------+--------------+
+|           10|   AD_ASST|         4400|          4400|      4400|        4400.0|
+|           20|    MK_REP|         6000|          6000|      6000|        6000.0|
+|           20|    MK_MAN|        13000|         13000|     13000|       13000.0|
+|           30|  PU_CLERK|        13900|          3100|      2500|        2780.0|
+|           30|    PU_MAN|        11000|         11000|     11000|       11000.0|
+|           40|    HR_REP|         6500|          6500|      6500|        6500.0|
+|           50|    ST_MAN|        36400|          8200|      5800|        7280.0|
+|           50|  ST_CLERK|        44000|          3600|      2100|        2750.0|
+|           50|  SH_CLERK|         5200|          2600|      2600|        2600.0|
+|           60|   IT_PROG|        28800|          9000|      4200|        5760.0|
+|           70|    PR_REP|        10000|         10000|     10000|       10000.0|
+|           90|   AD_PRES|        24000|         24000|     24000|       24000.0|
+|           90|     AD_VP|        34000|         17000|     17000|       17000.0|
+|          100|    FI_MGR|        12008|         12008|     12008|       12008.0|
+|          100|FI_ACCOUNT|        39600|          9000|      6900|        7920.0|
+|          110|    AC_MGR|        12008|         12008|     12008|       12008.0|
+|          110|AC_ACCOUNT|         8300|          8300|      8300|        8300.0|
++-------------+----------+-------------+--------------+----------+--------------+
+
+
