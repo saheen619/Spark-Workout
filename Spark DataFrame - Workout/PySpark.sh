@@ -1193,3 +1193,31 @@ root
 +-----------+-------------+
 
 >>> 
+>>> df2.join(df1, (df2.DEPARTMENT_ID == df1.DEPARTMENT_ID) & (df1.LOCATION_ID == 1700), "inner")
+.join(locDF, df1.LOCATION_ID == locDF.LOCATION_ID, "INNER").select(df2.EMPLOYEE_ID, df2.FIRST_NAME, 
+df2.DEPARTMENT_ID, df1.DEPARTMENT_NAME, df1.LOCATION_ID, locDF.LOCATION_NAME).show(100)
++-----------+-----------+-------------+---------------+-----------+-------------+
+|EMPLOYEE_ID| FIRST_NAME|DEPARTMENT_ID|DEPARTMENT_NAME|LOCATION_ID|LOCATION_NAME|
++-----------+-----------+-------------+---------------+-----------+-------------+
+|        119|      Karen|           30|     Purchasing|       1700|        INDIA|
+|        118|        Guy|           30|     Purchasing|       1700|        INDIA|
+|        117|      Sigal|           30|     Purchasing|       1700|        INDIA|
+|        116|     Shelli|           30|     Purchasing|       1700|        INDIA|
+|        115|  Alexander|           30|     Purchasing|       1700|        INDIA|
+|        114|        Den|           30|     Purchasing|       1700|        INDIA|
+|        113|       Luis|          100|        Finance|       1700|        INDIA|
+|        112|Jose Manuel|          100|        Finance|       1700|        INDIA|
+|        111|     Ismael|          100|        Finance|       1700|        INDIA|
+|        110|       John|          100|        Finance|       1700|        INDIA|
+|        109|     Daniel|          100|        Finance|       1700|        INDIA|
+|        108|      Nancy|          100|        Finance|       1700|        INDIA|
+|        102|        Lex|           90|      Executive|       1700|        INDIA|
+|        101|      Neena|           90|      Executive|       1700|        INDIA|
+|        100|     Steven|           90|      Executive|       1700|        INDIA|
+|        206|    William|          110|     Accounting|       1700|        INDIA|
+|        205|    Shelley|          110|     Accounting|       1700|        INDIA|
+|        200|   Jennifer|           10| Administration|       1700|        INDIA|
++-----------+-----------+-------------+---------------+-----------+-------------+
+
+
+
